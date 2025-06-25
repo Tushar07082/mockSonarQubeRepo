@@ -6,4 +6,7 @@ public class Main {
             System.out.println("This will cause NullPointerException!");
         }
     }
+    public static boolean isValidString(String str) {
+        return str != null && !str.trim().isEmpty();
+    }
 }

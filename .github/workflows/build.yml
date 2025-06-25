@@ -1,41 +1,33 @@
-# name: SonarCloud Analysis
-
-# on:
-#   push:
-#     branches:
-#       - main
-#   pull_request:
-#     types: [opened, synchronize, reopened]
-# jobs:
-#   sonarqube:
-#     name: SonarQube
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0  
-#       - name: SonarQube Scan
-#         uses: SonarSource/sonarqube-scan-action@v5
-#         env:
-#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-#       - name: Notify Slack if SonarQube fails
-#         run: |
-#           curl -X POST -H 'Content-type: application/json' \
-#           --data '{"text":"❌ *SonarQube scan failed* on PR #${{ github.event.pull_request.number }} in `${{ github.repository }}`"}' \
-#           ${{ secrets.SLACK_WEBHOOK_URL }}
-name: Slack Notification Test
+name: SonarCloud Analysis
 
 on:
-  push:
-    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  send-message:
+  sonarqube:
+    name: SonarQube
     runs-on: ubuntu-latest
     steps:
-      - name: Test Slack Message
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+
+      - name: SonarQube Scan
+        id: sonar_scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Check Quality Gate
+        id: quality_gate
+        uses: SonarSource/sonarqube-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Notify Slack if Quality Gate Fails
+        if: failure()
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"🔔 *Manual Slack test from GitHub Actions!*"}' \
+          --data '{"text":"❌ *SonarQube Quality Gate failed!* PR #${{ github.event.pull_request.number }} in `${{ github.repository }}`"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -1,4 +1,5 @@
-name: Build
+name: SonarCloud Analysis
+
 on:
   push:
     branches:
@@ -17,3 +18,9 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Notify Slack if SonarQube fails
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"❌ *SonarQube scan failed* on PR #${{ github.event.pull_request.number }} in `${{ github.repository }}`"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}

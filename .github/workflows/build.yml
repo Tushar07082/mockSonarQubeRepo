@@ -1,26 +1,41 @@
-name: SonarCloud Analysis
+# name: SonarCloud Analysis
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     types: [opened, synchronize, reopened]
+# jobs:
+#   sonarqube:
+#     name: SonarQube
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0  
+#       - name: SonarQube Scan
+#         uses: SonarSource/sonarqube-scan-action@v5
+#         env:
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+#       - name: Notify Slack if SonarQube fails
+#         run: |
+#           curl -X POST -H 'Content-type: application/json' \
+#           --data '{"text":"❌ *SonarQube scan failed* on PR #${{ github.event.pull_request.number }} in `${{ github.repository }}`"}' \
+#           ${{ secrets.SLACK_WEBHOOK_URL }}
+name: Slack Notification Test
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [main]
+
 jobs:
-  sonarqube:
-    name: SonarQube
+  send-message:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: Notify Slack if SonarQube fails
-        if: failure()
+      - name: Test Slack Message
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"❌ *SonarQube scan failed* on PR #${{ github.event.pull_request.number }} in `${{ github.repository }}`"}' \
+          --data '{"text":"🔔 *Manual Slack test from GitHub Actions!*"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}

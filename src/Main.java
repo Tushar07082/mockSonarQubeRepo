@@ -5,5 +5,9 @@ public class Main {
         if (ss.equals("hello")) {
             System.out.println("This will cause NullPointerException!");
         }
+
+        if(ss == null) {
+            System.out.println("This will cause NullPointerException!");
+        }
     }
 }

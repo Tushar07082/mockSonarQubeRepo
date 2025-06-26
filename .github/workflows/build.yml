@@ -1,8 +1,6 @@
-name: Build
+name: SonarCloud Analysis
+
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -12,8 +10,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0  
+
       - name: SonarQube Scan
+        id: sonar_scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Check Quality Gate
+        id: quality_gate
+        uses: SonarSource/sonarqube-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Notify Slack if Quality Gate Fails
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"❌ *SonarQube Quality Gate failed!* PR #${{ github.event.pull_request.number }} in `${{ github.repository }}`"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}

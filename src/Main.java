@@ -1,4 +1,4 @@
-public class UserService {
+public class Main {
 
     private static final String DB_PASSWORD = "admin123"; // S2068 - Hardcoded credentials
 

@@ -1,17 +1,17 @@
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Starting app..."); // ❌ S106 - Use logger instead
+        System.out.println("Starting app..."); 
 
         String role = getRole("alice");
 
         if ("admin".equals(role)) {
             System.out.println("Welcome admin");
-        } else if ("admin".equals(role)) {     // ❌ S2583 - Unreachable condition
+        } else if ("admin".equals(role)) {    
             System.out.println("Still admin?");
         }
 
-        connect("admin"); // ❌ S1192 - "admin" literal duplicated
+        connect("admin");
     }
 
     private static String getRole(String user) {
